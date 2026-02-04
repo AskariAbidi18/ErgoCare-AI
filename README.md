@@ -12,6 +12,7 @@ The system prioritizes:
 
 ## High-Level System Flow
 
+```
 Questionnaire Data
 ↓
 Data Cleaning & Validation
@@ -25,7 +26,7 @@ Recommendation Engine
 Explainability Layer
 ↓
 Reports / Dashboard
-
+```
 
 ---
 
@@ -96,7 +97,7 @@ The recommendation system uses a **hybrid approach**:
 
 - **ML models** identify *risk levels*
 - **Rule-based logic** maps risks to interventions
-
+```
 Example:
 > High posture risk + long sitting hours → posture correction + break reminders
 
@@ -104,7 +105,7 @@ This ensures recommendations are:
 - Actionable
 - Justifiable
 - Consistent
-
+```
 ---
 
 ### 6️⃣ Explainability Layer
