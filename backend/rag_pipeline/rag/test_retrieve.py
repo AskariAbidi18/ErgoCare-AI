@@ -12,7 +12,7 @@ def main():
     )
 
     query = "What are the rules for avoiding diagnostic medical claims?"
-    results = vectordb.similarity_search(query, k=3)
+    results = vectordb.similarity_search(query, k=3,    filter={"domain": domain})
 
     for i, doc in enumerate(results):
         print("\n==============================")
