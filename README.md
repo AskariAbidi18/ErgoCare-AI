@@ -19,11 +19,13 @@ Data Cleaning & Validation
 ↓
 Feature Engineering
 ↓
-Risk Scoring Models
+Risk Scoring Models (XGBOOST)
 ↓
 Recommendation Engine
 ↓
 Explainability Layer
+↓
+RAG Layer
 ↓
 Reports / Dashboard
 ```
