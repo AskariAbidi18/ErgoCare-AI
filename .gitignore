@@ -1,0 +1,28 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ===== Virtual Environments =====
+venv/
+.env/
+.venv/
+
+# ===== Data (DO NOT COMMIT) =====
+backend/ml_pipeline/data/raw/
+backend/ml_pipeline/data/synthetic/*.csv
+
+# ===== ML Artifacts =====
+*.pkl
+*.joblib
+*.model
+
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ===== Logs =====
+*.log
