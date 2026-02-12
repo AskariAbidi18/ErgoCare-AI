@@ -1,45 +1,39 @@
-import numpy as np
-import pandas as pd 
+import pandas as pd
 
-def clamp(
-        series : pd.Series,
-        low = 0.0,
-        high = 1.0
-) -> pd.Series:
-    return series.clip(
-        lower=low,
-        upper= high
-    )
 
-def scaling(
-        series: pd.Series
-) -> pd.Series :
-    return clamp(series,0.0,1.0) * 100 
+# -------------------------
+# Utility helpers
+# -------------------------
+
+def clamp(series: pd.Series, low=0.0, high=1.0) -> pd.Series:
+    """Clamp values between low and high."""
+    return series.clip(lower=low, upper=high)
+
+
+def scale_0_100(series: pd.Series) -> pd.Series:
+    """Clamp to [0,1] and scale to [0,100]."""
+    return clamp(series, 0.0, 1.0) * 100
+
+
+# -------------------------
+# Feature documentation
+# -------------------------
 
 FEATURE_DOCS = {
-    "who5_total": "Total WHO-5 wellbeing score (0-25). Higher means better wellbeing.",
-    "who5_normalized": "WHO-5 normalized wellbeing score (0-1). Higher means better wellbeing.",
-    "who5_stress_inverse": "Inverse wellbeing proxy (1 - who5_normalized). Higher means more stress risk.",
-
-    "pain_total": "Sum of all pain scores (0-30). Higher means more discomfort.",
-    "pain_avg": "Average of all pain scores (0-5). Higher means more discomfort.",
-    "pain_normalized": "Normalized pain score (0-1).",
-
-    "workload_hours_total": "Total weekly workload hours = teaching_hours + admin_hours.",
-    "workload_hours_normalized": "Normalized workload (0-1) based on expected max load.",
-    "admin_load_ratio": "Admin workload fraction of total workload.",
-
-    "posture_risk_index": "Posture-related ergonomic risk (0-100) based on sitting duration, workspace setup, screen position, feet support, and pain.",
+    "posture_risk_index": "Posture-related ergonomic risk (0-100) based on sitting duration, workspace setup, screen position, feet support, and neck/back pain.",
     "visual_strain_index": "Visual strain risk (0-100) based on eye strain, screen position, and sitting duration.",
-    "cognitive_load_index": "Cognitive stress risk (0-100) based on workload, weekend work, role overload, publish pressure, and WHO-5 inverse wellbeing.",
-    "msk_risk_index": "Musculoskeletal discomfort risk (0-100) based on multi-region pain and discomfort activity.",
+    "cognitive_load_index": "Cognitive stress risk (0-100) based on workload, weekend work, role overload, publish pressure, and inverse WHO-5 wellbeing.",
+    "msk_risk_index": "Musculoskeletal discomfort risk (0-100) based on multi-region pain and primary discomfort activity.",
     "lifestyle_risk_index": "Lifestyle-based risk modifier (0-100) based on sleep, hydration, physical activity, and commute time.",
     "overall_risk_index": "Final combined ergonomic risk score (0-100) aggregating posture, cognitive, visual, MSK, and lifestyle indices."
 }
 
-def build_fts(
-        df: pd.DataFrame
-) -> pd.DataFrame:
+
+# -------------------------
+# Feature Builder
+# -------------------------
+
+def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Builds ergonomic features and composite risk indices.
 
@@ -47,15 +41,31 @@ def build_fts(
         Encoded dataframe (output of preprocessing.encoder.encode)
 
     Output:
-        Dataframe with engineered features + risk indices.
+        Dataframe containing ONLY final ML-ready features:
+        - posture_risk_index
+        - visual_strain_index
+        - cognitive_load_index
+        - msk_risk_index
+        - lifestyle_risk_index
+        - overall_risk_index
     """
-    df =df.copy()
-    #who questions
-    who_cols = ["who5_q1", "who5_q2", "who5_q3", "who5_q4", "who5_q5"]
 
-    df["who5_total"] = df[who_cols].sum(axis=1)  # 0-25
-    df["who5_normalized"] = df["who5_total"] / 25.0
-    df["who5_stress_inverse"] = 1.0 - df["who5_normalized"]
+    df = df.copy()
+    features = pd.DataFrame(index=df.index)
+
+    # --------------------------------------------------
+    # WHO-5 (psychological wellbeing → stress proxy)
+    # --------------------------------------------------
+
+    who_cols = ["who5_q1", "who5_q2", "who5_q3", "who5_q4", "who5_q5"]
+    who5_total = df[who_cols].sum(axis=1)              # 0–25
+    who5_normalized = who5_total / 25.0                # 0–1
+    who5_stress_inverse = 1.0 - who5_normalized        # higher = worse wellbeing
+
+
+    # --------------------------------------------------
+    # Pain / MSD aggregation
+    # --------------------------------------------------
 
     pain_cols = [
         "neck_pain",
@@ -66,24 +76,31 @@ def build_fts(
         "eye_strain"
     ]
 
-    df["pain_total"] = df[pain_cols].sum(axis=1)  
-    df["pain_avg"] = df[pain_cols].mean(axis=1)   
-    df["pain_normalized"] = df["pain_total"] / 30.0
-
-    #workload 
-    df["workload_hours_total"] = df["teaching_hours"] + df["admin_hours"]
-
-    MAX_WORKLOAD = 50.0
-    df["workload_hours_normalized"] = clamp(df["workload_hours_total"] / MAX_WORKLOAD)
-    df["admin_load_ratio"] = clamp(df["admin_hours"] / (df["workload_hours_total"] + 1e-6))
+    pain_avg = df[pain_cols].mean(axis=1) / 5.0        # normalize to 0–1
 
 
-    # posture work index
+    # --------------------------------------------------
+    # Workload features
+    # --------------------------------------------------
+
+    workload_hours_total = df["teaching_hours"] + df["admin_hours"]
+
+    MAX_WORKLOAD = 50.0  # heuristic upper bound
+    workload_hours_normalized = clamp(workload_hours_total / MAX_WORKLOAD)
+
+    weekend_norm = df["weekend_work"] / 4.0
+    overload_norm = (df["role_overload"] - 1) / 4.0
+    publish_norm = df["publish_pressure"] / 2.0
+
+
+    # --------------------------------------------------
+    # Posture Risk Index
+    # --------------------------------------------------
+
     sitting_norm = df["sitting_duration"] / 3.0
     workspace_norm = df["workspace_setup"] / 4.0
     screen_norm = df["screen_position"] / 2.0
     feet_norm = df["feet_support"] / 3.0
-
 
     neck_back_norm = (df["neck_pain"] + df["lower_back_pain"]) / 10.0
 
@@ -95,52 +112,60 @@ def build_fts(
         0.25 * neck_back_norm
     )
 
-    df["posture_risk_index"] = scaling(posture_risk)
+    features["posture_risk_index"] = scale_0_100(posture_risk)
 
-    # vistual strain index 
 
-    eye_norm = df["eye_strain"] /5.0
+    # --------------------------------------------------
+    # Visual Strain Index
+    # --------------------------------------------------
+
+    eye_norm = df["eye_strain"] / 5.0
+
     visual_risk = (
         0.40 * eye_norm +
         0.30 * screen_norm +
         0.30 * sitting_norm
     )
 
-    df['visual_strain_index'] =scaling(visual_risk)
+    features["visual_strain_index"] = scale_0_100(visual_risk)
 
-    #cognitive load index
 
-    weekend_norm = df["weekend_work"] / 4.0
-    overload_norm = (df["role_overload"] - 1) / 4.0
-    publish_norm = df["publish_pressure"] / 2.0
+    # --------------------------------------------------
+    # Cognitive Load Index
+    # --------------------------------------------------
 
-    
     cognitive_risk = (
-        0.30 * df["workload_hours_normalized"] +
+        0.30 * workload_hours_normalized +
         0.20 * weekend_norm +
         0.20 * overload_norm +
         0.15 * publish_norm +
-        0.15 * df["who5_stress_inverse"]
+        0.15 * who5_stress_inverse
     )
 
-    df["cognitive_load_index"] = scaling(cognitive_risk)
+    features["cognitive_load_index"] = scale_0_100(cognitive_risk)
 
-    # msk risk index 
+
+    # --------------------------------------------------
+    # Musculoskeletal Risk Index
+    # --------------------------------------------------
 
     activity_norm = df["most_discomfort_activity"] / 2.0
-
-    msk_cols = ["neck_pain", "lower_back_pain", "wrist_pain", "shoulder_pain", "leg_pain"]
-    msk_avg = df[msk_cols].mean(axis=1) / 5.0
+    msk_avg = df[
+        ["neck_pain", "lower_back_pain", "wrist_pain", "shoulder_pain", "leg_pain"]
+    ].mean(axis=1) / 5.0
 
     msk_risk = (
         0.80 * msk_avg +
         0.20 * activity_norm
     )
 
-    df["msk_risk_index"] = scaling(msk_risk)
+    features["msk_risk_index"] = scale_0_100(msk_risk)
 
 
-    #lifestyle risk index 
+    # --------------------------------------------------
+    # Lifestyle Risk Index
+    # --------------------------------------------------
+
     sleep_norm = df["sleep_hours"] / 3.0
     hydration_norm = df["hydration"] / 2.0
     activity_life_norm = df["physical_activity"] / 3.0
@@ -153,20 +178,27 @@ def build_fts(
         0.20 * commute_norm
     )
 
-    df['lifestyle_risk_index'] = scaling(lifestyle_risk)
+    features["lifestyle_risk_index"] = scale_0_100(lifestyle_risk)
 
-    # overall risk index 
+
+    # --------------------------------------------------
+    # Overall Ergonomic Risk Index
+    # --------------------------------------------------
+    # v1 heuristic weights (domain-driven, explainable):
+    # posture:   30%
+    # cognitive: 25%
+    # visual:    20%
+    # MSK:       20%
+    # lifestyle: 5%
 
     overall_risk = (
-        0.30 * (df["posture_risk_index"] / 100.0) +
-        0.25 * (df["cognitive_load_index"] / 100.0) +
-        0.20 * (df["visual_strain_index"] / 100.0) +
-        0.20 * (df["msk_risk_index"] / 100.0) +
-        0.05 * (df["lifestyle_risk_index"] / 100.0)
+        0.30 * (features["posture_risk_index"] / 100.0) +
+        0.25 * (features["cognitive_load_index"] / 100.0) +
+        0.20 * (features["visual_strain_index"] / 100.0) +
+        0.20 * (features["msk_risk_index"] / 100.0) +
+        0.05 * (features["lifestyle_risk_index"] / 100.0)
     )
 
-    df["overall_risk_index"] = scaling(overall_risk)
+    features["overall_risk_index"] = scale_0_100(overall_risk)
 
-    return df
-
-
+    return features
