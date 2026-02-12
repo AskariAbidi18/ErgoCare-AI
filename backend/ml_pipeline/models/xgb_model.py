@@ -13,14 +13,10 @@ from ml_pipeline.labels.risk_labeler import label_risk
 
 
 def main():
-    # --------------------------------------------------
+
     # Load data
-    # --------------------------------------------------
     df = pd.read_csv("ml_pipeline/data/synthetic/synthetic.csv")
 
-    # --------------------------------------------------
-    # Pipeline
-    # --------------------------------------------------
     encoded = encode(df)
     features = build_features(encoded)
     labels = label_risk(features)
@@ -29,9 +25,6 @@ def main():
 
     y = labels
 
-    # --------------------------------------------------
-    # Train / test split
-    # --------------------------------------------------
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -40,9 +33,7 @@ def main():
         stratify=y
     )
 
-    # --------------------------------------------------
     # Handle class imbalance
-    # --------------------------------------------------
     class_weights = compute_class_weight(
         class_weight="balanced",
         classes=np.unique(y_train),
@@ -54,9 +45,7 @@ def main():
 
     print("\nClass weights:", weight_map)
 
-    # --------------------------------------------------
     # XGBoost model
-    # --------------------------------------------------
     model = XGBClassifier(
         objective="multi:softprob",
         num_class=3,
@@ -69,18 +58,14 @@ def main():
         random_state=42
     )
 
-    # --------------------------------------------------
     # Train
-    # --------------------------------------------------
     model.fit(
         X_train,
         y_train,
         sample_weight=sample_weights
     )
 
-    # --------------------------------------------------
     # Evaluate
-    # --------------------------------------------------
     y_pred = model.predict(X_test)
 
     print("\n--- Classification Report ---")
@@ -89,9 +74,7 @@ def main():
     print("\n--- Confusion Matrix ---")
     print(confusion_matrix(y_test, y_pred))
 
-    # --------------------------------------------------
     # Feature importance
-    # --------------------------------------------------
     importances = pd.Series(
         model.feature_importances_,
         index=X.columns
@@ -100,9 +83,7 @@ def main():
     print("\n--- Feature Importance ---")
     print(importances)
 
-    # --------------------------------------------------
     # Save model
-    # --------------------------------------------------
     model.save_model("ml_pipeline/models/xgboost_risk_model.json")
     print("\nModel saved to ml_pipeline/models/xgboost_risk_model.json")
 
