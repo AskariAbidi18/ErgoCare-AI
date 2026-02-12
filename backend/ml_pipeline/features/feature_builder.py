@@ -49,7 +49,7 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
         - lifestyle_risk_index
         - overall_risk_index
     """
-
+    print(df.isna().sum())
     df = df.copy()
     features = pd.DataFrame(index=df.index)
 

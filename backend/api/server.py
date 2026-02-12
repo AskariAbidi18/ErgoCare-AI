@@ -10,6 +10,17 @@ from ml_to_rag_bridge import build_rag_user_data
 
 from fastapi.middleware.cors import CORSMiddleware
 
+import math
+
+def clean_nan(obj):
+    if isinstance(obj, float) and math.isnan(obj):
+        return None
+    if isinstance(obj, dict):
+        return {k: clean_nan(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [clean_nan(v) for v in obj]
+    return obj
+
 
 # Logging Setup
 logging.basicConfig(
@@ -26,7 +37,7 @@ app = FastAPI(title="ErgoCare AI API", version="1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5174"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,13 +56,13 @@ def root():
 def predict(payload: SurveyInput):
     start = time.time()
     logger.info("/predict request received")
-
+    logger.info(f"payload : {payload}")
     ml_output = run_ml_pipeline(payload.data)
 
     elapsed = time.time() - start
     logger.info(f"/predict completed in {elapsed:.2f}s")
 
-    return ml_output
+    return clean_nan(ml_output)
 
 
 @app.post("/report")

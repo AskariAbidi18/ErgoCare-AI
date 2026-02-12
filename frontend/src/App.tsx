@@ -139,11 +139,11 @@ export default function App() {
 
     try {
       const payload = form;
-
+      console.log(payload)
       const res = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({data : payload}),
       });
 
       if (!res.ok) {
@@ -802,7 +802,7 @@ export default function App() {
                     </svg>
                   </div>
                   <div className="metric-label">Posture Risk</div>
-                  <div className="metric-value">{response.risk_indices.posture_risk_index.toFixed(2)}</div>
+                  <div className="metric-value">  {response?.risk_indices?.posture_risk_index?.toFixed(2) ?? "N/A"}</div>
                 </div>
 
                 <div className="metric-card">
@@ -835,7 +835,7 @@ export default function App() {
                     </svg>
                   </div>
                   <div className="metric-label">Musculoskeletal</div>
-                  <div className="metric-value">{response.risk_indices.msk_risk_index.toFixed(2)}</div>
+                  <div className="metric-value">{response?.risk_indices?.msk_risk_index?.toFixed(2) ?? "n/A"}</div>
                 </div>
 
                 <div className="metric-card">
@@ -846,7 +846,7 @@ export default function App() {
                     </svg>
                   </div>
                   <div className="metric-label">Lifestyle</div>
-                  <div className="metric-value">{response.risk_indices.lifestyle_risk_index.toFixed(2)}</div>
+                  <div className="metric-value">{response?.risk_indices?.lifestyle_risk_index?.toFixed(2) ?? "n/a"}</div>
                 </div>
 
                 <div className="metric-card metric-card-highlight">
@@ -856,7 +856,7 @@ export default function App() {
                     </svg>
                   </div>
                   <div className="metric-label">Overall Risk Index</div>
-                  <div className="metric-value">{response.risk_indices.overall_risk_index.toFixed(2)}</div>
+                  <div className="metric-value">{response?.risk_indices?.overall_risk_index?.toFixed(2) ?? 'n/a'}</div>
                 </div>
               </div>
             </div>
