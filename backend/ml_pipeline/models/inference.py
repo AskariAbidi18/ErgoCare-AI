@@ -56,6 +56,10 @@ def predict_single(raw_input: dict) -> dict:
             "overall_risk_index": float(features["overall_risk_index"].iloc[0])
         }
     }
+    print("FEATURES ROW:")
+    print(features.iloc[0])
+    print("ANY NAN?")
+    print(features.iloc[0].isna())
 
     return result
 

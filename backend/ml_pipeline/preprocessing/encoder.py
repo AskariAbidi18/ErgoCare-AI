@@ -37,12 +37,13 @@ WHO5_MAP = {
 SLEEP_MAP = {
     "Less than 5 hours": 0,
     "5 - 6 hours": 1,
+    "6 - 7 hours": 2,   # <-- ADD THIS
     "7 - 8 hours": 2,
     "More than 8 hours": 3
 }
 
 PHYSICAL_ACTIVITY_MAP = {
-    "Sedentary": 0,
+    "Sedentary (No Exercise)": 0,
     "Light Activity (Walking)": 1,
     "Moderate Activity": 2,
     "Active": 3
@@ -62,6 +63,7 @@ PUBLISH_PRESSURE_MAP = {
 }
 
 WORKSPACE_SETUP_MAP = {
+    "Basic Chair and Table": 1,
     "Adjustable Chair and Setup": 0,
     "Fixed Chair and Desk": 1,
     "Standing Desk": 2,
@@ -85,7 +87,8 @@ FEET_SUPPORT_MAP = {
 DISCOMFORT_ACTIVITY_MAP = {
     "Typing": 0,
     "Manual grading / writing": 1,
-    "Standing": 2
+    "Standing": 2,
+    "Sitting": 0   # choose appropriate encoding
 }
 
 HYDRATION_MAP = {
@@ -103,8 +106,8 @@ def encode(df: pd.DataFrame) -> pd.DataFrame:
     df["weekend_work"] = df["weekend_work"].map(WEEKEND_WORK_MAP)
     df["role_overload"] = df["role_overload"].astype(int)
     df["sitting_duration"] = df["sitting_duration"].map(SITTING_DURATION_MAP)
-    df["sleep_hours"] = df["sleep_hours"].map(SLEEP_MAP)
-    df["physical_activity"] = df["physical_activity"].map(PHYSICAL_ACTIVITY_MAP)
+    df["sleep_hours"] = df["sleep_hours"].map(SLEEP_MAP).fillna(1)
+    df["physical_activity"] = df["physical_activity"].map(PHYSICAL_ACTIVITY_MAP).fillna(0)
     df["commute_time"] = df["commute_time"].map(COMMUTE_MAP)
     df["publish_pressure"] = df["publish_pressure"].map(PUBLISH_PRESSURE_MAP)
     df["workspace_setup"] = df["workspace_setup"].map(WORKSPACE_SETUP_MAP)

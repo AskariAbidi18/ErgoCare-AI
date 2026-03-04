@@ -909,3 +909,217 @@ input[type="number"]::-webkit-inner-spin-button {
 .mb-3 { margin-bottom: var(--spacing-md); }
 .mb-4 { margin-bottom: var(--spacing-lg); }
 .mb-5 { margin-bottom: var(--spacing-xl); }
+
+.rag-cta-section {
+  margin-top: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border: 1.5px solid rgba(102, 126, 234, 0.25);
+  padding: 1.75rem 2rem;
+}
+
+.rag-cta-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.rag-cta-icon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.rag-cta-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.rag-cta-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.3rem;
+}
+
+.rag-cta-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.rag-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.rag-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.rag-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────
+   RAG Report Section — full rendered report
+   ───────────────────────────────────────────── */
+.rag-report-section {
+  margin-top: 2rem;
+  border-radius: 20px;
+  background: var(--card-bg, #fff);
+  border: 1.5px solid rgba(102, 126, 234, 0.2);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.08);
+}
+
+.rag-report-header {
+  padding: 2rem 2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.06) 100%);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.12);
+}
+
+.rag-report-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.12);
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  margin-bottom: 0.85rem;
+}
+
+.rag-report-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 0.4rem;
+}
+
+.rag-report-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.rag-report-body {
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Individual section within the report */
+.rag-section {
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.rag-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.08), transparent);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.rag-section-num {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rag-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.rag-section-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.rag-paragraph {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.rag-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.rag-bullet-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #667eea;
+  margin-top: 0.55rem;
+}
+
+/* Fallback: sections with no heading get a plain card */
+.rag-section:not(:has(.rag-section-heading)) .rag-section-body {
+  padding: 1rem 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .rag-cta-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rag-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .rag-report-header,
+  .rag-report-body {
+    padding: 1.25rem;
+  }
+}
