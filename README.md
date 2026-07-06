@@ -34,7 +34,7 @@ Reports / Dashboard
 
 ## Architecture Breakdown
 
-### 1️⃣ Data Collection Layer
+### Data Collection Layer
 **Input:** Structured questionnaire responses (CSV / JSON)
 
 - Data is collected via a standardized ergonomic questionnaire
@@ -46,7 +46,7 @@ Reports / Dashboard
 
 ---
 
-### 2️⃣ Data Preprocessing Layer
+### Data Preprocessing Layer
 This layer prepares raw responses for modeling.
 
 Responsibilities:
@@ -60,7 +60,7 @@ Model quality is directly dependent on preprocessing quality.
 
 ---
 
-### 3️⃣ Feature Engineering Layer
+### Feature Engineering Layer
 Raw questionnaire responses are converted into **ergonomic indicators**.
 
 Examples:
@@ -77,7 +77,7 @@ All features are:
 
 ---
 
-### 4️⃣ Risk Scoring Models
+### Risk Scoring Models
 Instead of a single monolithic model, the system uses **multiple risk-specific models**.
 
 | Risk Domain | Purpose |
@@ -94,7 +94,7 @@ Models are chosen to balance:
 
 ---
 
-### 5️⃣ Recommendation Engine
+### Recommendation Engine
 The recommendation system uses a **hybrid approach**:
 
 - **ML models** identify *risk levels*
@@ -110,7 +110,7 @@ This ensures recommendations are:
 ```
 ---
 
-### 6️⃣ Explainability Layer
+### Explainability Layer
 Every output is explainable.
 
 For each recommendation, the system provides:
@@ -125,7 +125,7 @@ This layer ensures:
 
 ---
 
-### 7️⃣ Output Layer
+### Output Layer
 Final outputs include:
 - Individual ergonomic assessment reports
 - Aggregated risk insights (optional)
